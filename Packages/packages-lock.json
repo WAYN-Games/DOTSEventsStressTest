@@ -195,14 +195,13 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework.performance": {
-      "version": "3.0.2",
-      "depth": 1,
-      "source": "registry",
+      "version": "file:com.unity.test-framework.performance@3.0.2",
+      "depth": 0,
+      "source": "embedded",
       "dependencies": {
         "com.unity.test-framework": "1.1.31",
         "com.unity.modules.jsonserialize": "1.0.0"
-      },
-      "url": "https://packages.unity.com"
+      }
     },
     "com.unity.textmeshpro": {
       "version": "3.0.6",

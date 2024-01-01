@@ -1,7 +1,5 @@
 using System;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 
 public enum EventType
 {
@@ -19,9 +17,11 @@ public enum EventType
     G_ParallelWriteToStream_SinglePollList,
 
     H_ParallelWriteToStream_SinglePollHashMap,
-    I_ParallelWriteToStream_ParallelPollHashMap,
+    ParallelWriteToStream_ParallelPollHashMap,
 
     J_SingleDirectModification,
+    K_ParallelWriteToStream_ParallelWriteToHashMap_ParallelPollHashMap,
+    W_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool
 }
 
 [Serializable]
@@ -31,7 +31,6 @@ public struct EventStressTest : IComponentData
     public Entity HealthPrefab;
     public int HealthEntityCount;
     public float Spacing;
-
     public int DamagersPerHealths;
 }
 

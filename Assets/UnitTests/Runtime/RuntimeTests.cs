@@ -20,12 +20,11 @@ using Unity.Transforms;
 public class RuntimeTests : ECSTestsFixture
 {
 	// TODO: move these into a ScriptableObject for easier/faster value tweaking
-	private readonly int _entityCount = 500000;
+	//private readonly int _entityCount = 500000;
 	private readonly float _spacing = 1f;
-	private readonly int _damagers = 1;
 	private readonly float _healthValue = 1000f;
 
-	private void MeasureWorldUpdate(EventType eventType)
+	private void MeasureWorldUpdate(EventType eventType,int entityCount,int damagersPerHealths)
 	{
 		// create the HealthPrefab entity
 		// NOTE: I found it difficult to verify whether this is 100% identical to the scene's Health prefab entity after conversion.
@@ -37,7 +36,7 @@ public class RuntimeTests : ECSTestsFixture
 
 		// we need this to spawn all the entities during the first world update
 		var spawner = m_Manager.CreateEntity(typeof(EventStressTest));
-		m_Manager.SetComponentData(spawner, CreateEventStressTest(eventType, healthPrefab));
+		m_Manager.SetComponentData(spawner, CreateEventStressTest(eventType, healthPrefab,entityCount,damagersPerHealths));
 
 		Measure.Method(() =>
 			{
@@ -53,50 +52,56 @@ public class RuntimeTests : ECSTestsFixture
 			// From third run onwards measurements are stable ...
 			.WarmupCount(2)
 			// 10 seems enough to get a decently low deviation
-			.MeasurementCount(10)
+			.MeasurementCount(20)
 			// only measure once to keep numbers comparable to original forum post
 			.IterationsPerMeasurement(1)
 			.Run();
 	}
 
-	private EventStressTest CreateEventStressTest(EventType eventType, Entity prefab) => new EventStressTest
+	private EventStressTest CreateEventStressTest(EventType eventType, Entity prefab,int entityCount,int damagersPerHealths) => new EventStressTest
 	{
 		EventType = eventType,
 		HealthPrefab = prefab,
-		HealthEntityCount = _entityCount,
+		HealthEntityCount = entityCount,
 		Spacing = _spacing,
-		DamagersPerHealths = _damagers,
+		DamagersPerHealths = damagersPerHealths,
 	};
 
 	[Test, Performance]
-	public void A_ParallelWriteToStream_ParallelPollBuffers() => MeasureWorldUpdate(EventType.A_ParallelWriteToStream_ParallelPollBuffers);
+	public void A_ParallelWriteToStream_ParallelPollBuffers([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.A_ParallelWriteToStream_ParallelPollBuffers,entityCount,damagersPerHealths);
 
 	[Test, Performance]
-	public void B_SingleWriteToBuffers_ParallelPollBuffers() => MeasureWorldUpdate(EventType.B_SingleWriteToBuffers_ParallelPollBuffers);
+	public void B_SingleWriteToBuffers_ParallelPollBuffers([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.B_SingleWriteToBuffers_ParallelPollBuffers,entityCount,damagersPerHealths);
 
 	[Test, Performance]
-	public void C_ParallelWriteToBuffersECB_ParallelPollBuffers() => MeasureWorldUpdate(EventType.C_ParallelWriteToBuffersECB_ParallelPollBuffers);
+	public void C_ParallelWriteToBuffersECB_ParallelPollBuffers([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.C_ParallelWriteToBuffersECB_ParallelPollBuffers,entityCount,damagersPerHealths);
 
 	[Test, Performance]
-	public void D_ParallelWriteToStream_SingleApplyToEntities() => MeasureWorldUpdate(EventType.D_ParallelWriteToStream_SingleApplyToEntities);
+	public void D_ParallelWriteToStream_SingleApplyToEntities([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.D_ParallelWriteToStream_SingleApplyToEntities,entityCount,damagersPerHealths);
 
 	[Test, Performance]
-	public void E_ParallelWriteToStream_ParallelApplyToEntities() => MeasureWorldUpdate(EventType.E_ParallelWriteToStream_ParallelApplyToEntities);
+	public void E_ParallelWriteToStream_ParallelApplyToEntities([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.E_ParallelWriteToStream_ParallelApplyToEntities,entityCount,damagersPerHealths);
 
 	[Test, Performance]
-	public void F_ParallelCreateEventEntities_SingleApplyToEntities() => MeasureWorldUpdate(EventType.F_ParallelCreateEventEntities_SingleApplyToEntities);
+	public void F_ParallelCreateEventEntities_SingleApplyToEntities([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.F_ParallelCreateEventEntities_SingleApplyToEntities,entityCount,damagersPerHealths);
 
 	[Test, Performance]
-	public void G_ParallelWriteToStream_SinglePollList() => MeasureWorldUpdate(EventType.G_ParallelWriteToStream_SinglePollList);
+	public void G_ParallelWriteToStream_SinglePollList([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.G_ParallelWriteToStream_SinglePollList,entityCount,damagersPerHealths);
 
 	[Test, Performance]
-	public void H_ParallelWriteToStream_SinglePollHashMap() => MeasureWorldUpdate(EventType.H_ParallelWriteToStream_SinglePollHashMap);
+	public void H_ParallelWriteToStream_SinglePollHashMap([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.H_ParallelWriteToStream_SinglePollHashMap,entityCount,damagersPerHealths);
 
 	[Test, Performance]
-	public void I_ParallelWriteToStream_ParallelPollHashMap() => MeasureWorldUpdate(EventType.I_ParallelWriteToStream_ParallelPollHashMap);
+	public void I_ParallelWriteToStream_ParallelPollHashMap([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.ParallelWriteToStream_ParallelPollHashMap,entityCount,damagersPerHealths);
 
 	[Test, Performance]
-	public void J_SingleDirectModification() => MeasureWorldUpdate(EventType.J_SingleDirectModification);
+	public void J_SingleDirectModification([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.J_SingleDirectModification,entityCount,damagersPerHealths);
+	
+	[Test, Performance]
+	public void K_ParallelWriteToStream_ParallelWriteToHashMap_ParallelPollHashMap([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.K_ParallelWriteToStream_ParallelWriteToHashMap_ParallelPollHashMap,entityCount,damagersPerHealths);
+	
+	[Test, Performance]
+	public void W_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.W_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool,entityCount,damagersPerHealths);
 
 	public override void Setup()
 	{
