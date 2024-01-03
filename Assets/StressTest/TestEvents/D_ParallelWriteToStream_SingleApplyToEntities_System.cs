@@ -25,10 +25,6 @@ public partial class D_ParallelWriteToStream_SingleApplyToEntities_System : Syst
 
         EntityQuery damagersQuery = GetEntityQuery(typeof(Damager));
 
-        if (PendingStream.IsCreated)
-        {
-            PendingStream.Dispose();
-        }
         PendingStream = new NativeStream(damagersQuery.CalculateChunkCount(), Allocator.TempJob);
 
         Dependency = new DamagersWriteToStreamJob
@@ -43,5 +39,6 @@ public partial class D_ParallelWriteToStream_SingleApplyToEntities_System : Syst
             StreamDamageEvents = PendingStream.AsReader(),
             HealthFromEntity = GetComponentLookup<Health>(false),
         }.Schedule(Dependency);
+        Dependency = PendingStream.Dispose(Dependency);
     }
 }

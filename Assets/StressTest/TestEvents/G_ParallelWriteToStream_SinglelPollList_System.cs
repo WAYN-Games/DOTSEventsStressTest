@@ -38,10 +38,6 @@ public partial class G_ParallelWriteToStream_SinglelPollList_System : SystemBase
         EntityQuery healthsQuery = GetEntityQuery(typeof(Health), typeof(DamageEvent));
         EntityQuery damageBuffersQuery = GetEntityQuery(typeof(DamageEvent));
 
-        if (PendingStream.IsCreated)
-        {
-            PendingStream.Dispose();
-        }
         PendingStream = new NativeStream(damagersQuery.CalculateChunkCount(), Allocator.TempJob);
 
         Dependency = new DamagersWriteToStreamJob

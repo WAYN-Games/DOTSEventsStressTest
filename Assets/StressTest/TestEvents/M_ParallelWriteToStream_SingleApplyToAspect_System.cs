@@ -36,12 +36,6 @@ public partial struct M_ParallelWriteToStream_SingleApplyToAspect_System : ISyst
         if (SystemAPI.GetSingleton<EventStressTest>().EventType != EventType.M_ParallelWriteToStream_SingleApplyToAspect_System)
             return;
 
-     
-
-        if (PendingStream.IsCreated)
-        {
-            PendingStream.Dispose();
-        }
         PendingStream = new NativeStream(_query.CalculateChunkCount(), Allocator.TempJob);
 
         _entityType.Update(ref state);

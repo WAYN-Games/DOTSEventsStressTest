@@ -27,10 +27,6 @@ public partial class A_ParallelWriteToStream_ParallelPollBuffers_System : System
         EntityQuery healthsQuery = GetEntityQuery(typeof(Health), typeof(DamageEvent));
         EntityQuery damageBuffersQuery = GetEntityQuery(typeof(DamageEvent));
 
-        if (PendingStream.IsCreated)
-        {
-            PendingStream.Dispose();
-        }
         PendingStream = new NativeStream(damagersQuery.CalculateChunkCount(), Allocator.TempJob);
 
         Dependency = new DamagersWriteToStreamJob
@@ -59,5 +55,6 @@ public partial class A_ParallelWriteToStream_ParallelPollBuffers_System : System
             DamageEventBufferType = GetBufferTypeHandle<DamageEvent>(false),
             LastSystemVersion = this.LastSystemVersion,
         }.ScheduleParallel(damageBuffersQuery, Dependency);
+        Dependency = PendingStream.Dispose(Dependency);
     }
 }

@@ -42,10 +42,6 @@ public partial class L_ParallelWriteToStream_SingleWriteToHashMap_ChunkPool_Syst
 
         EntityQuery damagersQuery = GetEntityQuery(typeof(Damager));
 
-        if (PendingStream.IsCreated)
-        {
-            PendingStream.Dispose();
-        }
         PendingStream = new NativeStream(damagersQuery.CalculateChunkCount(), Allocator.TempJob);
 
         Dependency = new DamagersWriteToStreamJob
@@ -75,5 +71,6 @@ public partial class L_ParallelWriteToStream_SingleWriteToHashMap_ChunkPool_Syst
         {
             DamageEventsMap = DamageEventsMap,
         }.Schedule(Dependency);
+        Dependency = PendingStream.Dispose(Dependency);
     }
 }

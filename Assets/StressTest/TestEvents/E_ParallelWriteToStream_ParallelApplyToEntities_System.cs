@@ -25,10 +25,6 @@ public partial class E_ParallelWriteToStream_ParallelApplyToEntities_System : Sy
 
         EntityQuery damagersQuery = GetEntityQuery(typeof(Damager));
 
-        if (PendingStream.IsCreated)
-        {
-            PendingStream.Dispose();
-        }
         PendingStream = new NativeStream(damagersQuery.CalculateChunkCount(), Allocator.TempJob);
 
         Dependency = new DamagersWriteToStreamJob

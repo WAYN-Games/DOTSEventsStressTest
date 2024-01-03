@@ -36,10 +36,6 @@ public partial class H_ParallelWriteToStream_SinglePollHashMap_System : SystemBa
 
         EntityQuery damagersQuery = GetEntityQuery(typeof(Damager));
 
-        if (PendingStream.IsCreated)
-        {
-            PendingStream.Dispose();
-        }
         PendingStream = new NativeStream(damagersQuery.CalculateChunkCount(), Allocator.TempJob);
 
         Dependency = new DamagersWriteToStreamJob
