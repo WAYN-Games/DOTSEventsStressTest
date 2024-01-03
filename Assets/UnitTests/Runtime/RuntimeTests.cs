@@ -105,6 +105,9 @@ public class RuntimeTests : ECSTestsFixture
 	[Test, Performance]
 	public void N_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.N_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool,entityCount,damagersPerHealths);
 
+	[Test, Performance]
+	public void O_ParallelWriteToStream_SingleApplyFromLookup([Values(0, 10, 100, 1000,10000,100000,500000)] int entityCount,[Values(0, 1, 2, 5,10)] int damagersPerHealths) => MeasureWorldUpdate(EventType.O_ParallelWriteToStream_SingleApplyFromLookup,entityCount,damagersPerHealths);
+
 	public override void Setup()
 	{
 		// custom flag in ECSTestsFixture that allows creating the default world, rather than an empty (no systems) world

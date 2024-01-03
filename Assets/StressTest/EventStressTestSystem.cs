@@ -30,7 +30,6 @@ public partial struct EventStressTestSystem : ISystem
         Entity damagerEntityPrefab = entityManager.CreateEntity();
         entityManager.AddComponent<Damager>(damagerEntityPrefab);
         entityManager.AddComponent<CombatantEntityComponent>(damagerEntityPrefab);
-        entityManager.SetComponentEnabled<CombatantEntityComponent>(damagerEntityPrefab,false);
         var damagerEntities = entityManager.Instantiate(damagerEntityPrefab, eventStressTest.HealthEntityCount*eventStressTest.DamagersPerHealths, Allocator.Temp);
         
         
@@ -39,7 +38,6 @@ public partial struct EventStressTestSystem : ISystem
         entityManager.AddComponentData(healthEntityPrefab, new Health { Value = 5000 });
         entityManager.AddBuffer<DamageEvent>(healthEntityPrefab);
         entityManager.AddComponent<CombatantEntityComponent>(healthEntityPrefab);
-        entityManager.SetComponentEnabled<CombatantEntityComponent>(healthEntityPrefab,false);
         var healthEntities = entityManager.Instantiate(healthEntityPrefab, eventStressTest.HealthEntityCount, Allocator.Temp);
         
 

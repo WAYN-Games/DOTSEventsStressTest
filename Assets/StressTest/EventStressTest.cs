@@ -18,7 +18,8 @@ public enum EventType
     K_ParallelWriteToStream_ParallelWriteToHashMap_ParallelPollHashMap,
     L_ParallelWriteToStream_SingleWriteToHashMap_ChunkPool,
     M_ParallelWriteToStream_SingleApplyToAspect_System,
-    N_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool
+    N_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool,
+    O_ParallelWriteToStream_SingleApplyFromLookup
 }
 
 [Serializable]
