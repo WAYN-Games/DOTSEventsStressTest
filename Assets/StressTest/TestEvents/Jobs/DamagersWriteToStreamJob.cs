@@ -2,8 +2,11 @@ using System;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
+using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
+using UnityEngine;
 
 [BurstCompile(OptimizeFor = OptimizeFor.Performance)]
 public struct DamagersWriteToStreamJob : IJobChunk

@@ -81,5 +81,6 @@ public partial class H_ParallelWriteToStream_SinglePollHashMap_System : SystemBa
         {
             DamageEventsMap = DamageEventsMap,
         }.Schedule(Dependency);
+        Dependency = PendingStream.Dispose(Dependency);
     }
 }

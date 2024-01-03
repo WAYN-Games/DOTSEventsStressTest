@@ -71,5 +71,6 @@ public partial class G_ParallelWriteToStream_SinglelPollList_System : SystemBase
         {
             DamageEventsList = DamageEventsList,
         }.Schedule(Dependency);
+        Dependency = PendingStream.Dispose(Dependency);
     }
 }

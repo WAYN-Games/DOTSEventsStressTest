@@ -168,9 +168,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data:
-    EventType: 4
+    EventType: 12
     HealthEntityCount: 10000
-    Spacing: 1
     DamagersPerHealths: 10
   Prefab: {fileID: 1426645702674376967, guid: da10ed77b519af5498cd44dd278809ca, type: 3}
 --- !u!1660057539 &9223372036854775807

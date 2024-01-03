@@ -47,5 +47,6 @@ public partial class E_ParallelWriteToStream_ParallelApplyToEntities_System : Sy
             StorageInfoFromEntity = GetEntityStorageInfoLookup(),
             HealthType = GetComponentTypeHandle<Health>(false),
         }.Schedule(damagersQuery.CalculateChunkCount(), 1, Dependency);
+        Dependency = PendingStream.Dispose(Dependency);
     }
 }

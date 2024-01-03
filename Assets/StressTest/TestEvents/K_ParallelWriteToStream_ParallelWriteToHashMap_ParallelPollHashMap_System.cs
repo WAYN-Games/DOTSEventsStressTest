@@ -73,5 +73,7 @@ public partial class K_ParallelWriteToStream_ParallelWriteToHashMap_ParallelPoll
         {
             DamageEventsMap = DamageEventsMap,
         }.Schedule(Dependency);
+        
+        Dependency = PendingStream.Dispose(Dependency);
     }
 }

@@ -2,7 +2,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
-public partial class W_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool_System : SystemBase
+public partial class L_ParallelWriteToStream_SingleWriteToHashMap_ChunkPool_System : SystemBase
 {
     public NativeStream PendingStream;
     public NativeParallelMultiHashMap<Entity, DamageEvent> DamageEventsMap;
@@ -37,7 +37,7 @@ public partial class W_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool_Sy
         if (!SystemAPI.HasSingleton<EventStressTest>())
             return;
 
-        if (SystemAPI.GetSingleton<EventStressTest>().EventType != EventType.W_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool)
+        if (SystemAPI.GetSingleton<EventStressTest>().EventType != EventType.L_ParallelWriteToStream_SingleWriteToHashMap_ChunkPool)
             return;
 
         EntityQuery damagersQuery = GetEntityQuery(typeof(Damager));
@@ -55,17 +55,11 @@ public partial class W_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool_Sy
             StreamDamageEvents = PendingStream.AsWriter(),
         }.ScheduleParallel(damagersQuery, Dependency);
 
-        Dependency = new EnsureHashMapCapacityJob
+        Dependency = new SingleWriteStreamEventsToHashMapJob
         {
             StreamDamageEvents = PendingStream.AsReader(),
             DamageEventsMap = DamageEventsMap,
         }.Schedule(Dependency);
-
-        Dependency = new ParallelWriteStreamEventsToHashMapJob
-        {
-            StreamDamageEvents = PendingStream.AsReader(),
-            DamageEventsMap = DamageEventsMap.AsParallelWriter(),
-        }.Schedule(damagersQuery.CalculateChunkCount(), 1, Dependency);
 
         HealthTypeHandle.Update(this);
         EntityTypeHandle.Update(this);

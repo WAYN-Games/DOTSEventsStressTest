@@ -1,60 +1,78 @@
+using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Random = Unity.Mathematics.Random;
 
-[RequireMatchingQueriesForUpdate]
-[AlwaysSynchronizeSystem]
+[BurstCompile]
 [UpdateInGroup(typeof(SimulationSystemGroup), OrderLast = true)]
-public partial class EventStressTestSystem : SystemBase
+public partial struct EventStressTestSystem : ISystem
 {
-    protected override void OnUpdate()
+    public void OnCreate(ref SystemState state)
     {
-        EntityManager.CompleteAllTrackedJobs();
+        state.RequireForUpdate<EventStressTest>();
+    }
 
-        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+    [BurstCompile]
+    void OnUpdate(ref SystemState state)
+    {
+        EntityManager entityManager = state.EntityManager;
+        entityManager.CompleteAllTrackedJobs();
 
-        Entities
-            .WithNone<IsInitialized>()
-            .ForEach((Entity entity, ref EventStressTest spawner) =>
+        EventStressTest eventStressTest = SystemAPI.GetSingleton<EventStressTest>();
+        Random random = Random.CreateFromIndex(1);
+
+        Entity damagerEntityPrefab = entityManager.CreateEntity();
+        entityManager.AddComponent<Damager>(damagerEntityPrefab);
+        entityManager.AddComponent<CombatantEntityComponent>(damagerEntityPrefab);
+        entityManager.SetComponentEnabled<CombatantEntityComponent>(damagerEntityPrefab,false);
+        var damagerEntities = entityManager.Instantiate(damagerEntityPrefab, eventStressTest.HealthEntityCount*eventStressTest.DamagersPerHealths, Allocator.Temp);
+        
+        
+        
+        Entity healthEntityPrefab = entityManager.CreateEntity();
+        entityManager.AddComponentData(healthEntityPrefab, new Health { Value = 5000 });
+        entityManager.AddBuffer<DamageEvent>(healthEntityPrefab);
+        entityManager.AddComponent<CombatantEntityComponent>(healthEntityPrefab);
+        entityManager.SetComponentEnabled<CombatantEntityComponent>(healthEntityPrefab,false);
+        var healthEntities = entityManager.Instantiate(healthEntityPrefab, eventStressTest.HealthEntityCount, Allocator.Temp);
+        
+
+
+        entityManager.DestroyEntity(damagerEntityPrefab);
+        entityManager.DestroyEntity(healthEntityPrefab);
+        Shuffle(ref damagerEntities,random);
+
+        for (int i = 0; i < healthEntities.Length ; i++)
+        {
+            Entity healthEntity = healthEntities[i];
+            for (int j = 0; j < eventStressTest.DamagersPerHealths; j++)
             {
-                Random random = Random.CreateFromIndex(1);
-                int spawnResolution = (int)math.ceil(math.sqrt(spawner.HealthEntityCount));
-
-                int spawnCounter = 0;
-                for (int x = 0; x < spawnResolution; x++)
+                entityManager.SetComponentData(damagerEntities[i*eventStressTest.DamagersPerHealths + j], new Damager()
                 {
-                    for (int y = 0; y < spawnResolution; y++)
-                    {
-                        Entity spawnedPrefab = ecb.Instantiate(spawner.HealthPrefab);
-                        ecb.SetComponent(spawnedPrefab, new LocalTransform  { Position = new float3(x * spawner.Spacing, 0f, y * spawner.Spacing) });
+                    Target = healthEntity,
+                    Damage = random.NextFloat()
+                });
+            }
+        }
 
-                        for (int d = 0; d < spawner.DamagersPerHealths; d++)
-                        {
-                            Entity damagerEntity = ecb.CreateEntity();
-                            ecb.AddComponent(damagerEntity, new Damager { Target = spawnedPrefab, Damage = 0.1f });
-                        }
-
-                        spawnCounter++;
-                        if (spawnCounter >= spawner.HealthEntityCount)
-                        {
-                            break;
-                        }
-                    }
-
-                    if (spawnCounter >= spawner.HealthEntityCount)
-                    {
-                        break;
-                    }
-                }
-
-                ecb.AddComponent(entity, new IsInitialized());
-            }).Run();
-
-        ecb.Playback(EntityManager);
-        ecb.Dispose();
-
+        state.Enabled = false;
+    }
+   
+    [BurstCompile]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void Shuffle<T>(ref NativeArray<T> list,Random random)  where T: struct
+    {  
+        var n = list.Length;  
+        while (n > 1) {  
+            n--;  
+            var k = random.NextInt(n + 1);  
+            (list[k], list[n]) = (list[n], list[k]);
+        }  
     }
 }

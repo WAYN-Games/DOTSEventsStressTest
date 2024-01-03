@@ -8,29 +8,24 @@ public enum EventType
     A_ParallelWriteToStream_ParallelPollBuffers,
     B_SingleWriteToBuffers_ParallelPollBuffers,
     C_ParallelWriteToBuffersECB_ParallelPollBuffers,
-
     D_ParallelWriteToStream_SingleApplyToEntities,
     E_ParallelWriteToStream_ParallelApplyToEntities,
-
     F_ParallelCreateEventEntities_SingleApplyToEntities,
-
     G_ParallelWriteToStream_SinglePollList,
-
     H_ParallelWriteToStream_SinglePollHashMap,
-    ParallelWriteToStream_ParallelPollHashMap,
-
+    I_ParallelWriteToStream_ParallelPollHashMap,
     J_SingleDirectModification,
     K_ParallelWriteToStream_ParallelWriteToHashMap_ParallelPollHashMap,
-    W_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool
+    L_ParallelWriteToStream_SingleWriteToHashMap_ChunkPool,
+    M_ParallelWriteToStream_SingleApplyToAspect_System,
+    N_ParallelWriteToStream_ParallelWriteToHashMap_ChunkPool
 }
 
 [Serializable]
 public struct EventStressTest : IComponentData
 {
     public EventType EventType;
-    public Entity HealthPrefab;
     public int HealthEntityCount;
-    public float Spacing;
     public int DamagersPerHealths;
 }
 
