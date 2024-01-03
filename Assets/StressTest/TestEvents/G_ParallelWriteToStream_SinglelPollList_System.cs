@@ -1,9 +1,6 @@
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using Unity.Mathematics;
-using Unity.Transforms;
 
 public partial class G_ParallelWriteToStream_SinglelPollList_System : SystemBase
 {
